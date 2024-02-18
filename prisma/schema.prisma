@@ -12,11 +12,11 @@ datasource db {
 
 // Define the Product table to store information about products
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
+  id          String      @id @default(cuid())
+  name        String      @unique
   description String?
   price       Float
-  stock       Int
+  stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -26,13 +26,13 @@ model Product {
 
 // Define the Customer table to store information about customers
 model Customer {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(cuid())
   firstName String
   lastName  String
-  email     String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  email     String?     @unique
+  phone     String?     @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   // Define a relation to Order table
   orders    Order[]
@@ -40,34 +40,41 @@ model Customer {
 
 // Define the Order table to represent sales orders
 model Order {
-  id         Int      @id @default(autoincrement())
+  id         String      @id @default(uuid())
   orderDate  DateTime
   total      Float
-  status     String   // 'pending', 'completed', 'cancelled', etc.
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  status     OrderStatus
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   // Define a relation to Customer table
-  customerId Int
-  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+  customer   Customer   @relation(fields: [customerId], references: [id])
 
   // Define a relation to OrderDetail table
   orderDetails OrderDetail[]
 }
 
+// Define order status enum
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 // Define the OrderDetail table to store details of each product in an order
 model OrderDetail {
-  id         Int      @id @default(autoincrement())
+  id         String      @id @default(cuid())
   quantity   Int
   subtotal   Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   // Define a relation to Order table
-  orderId    Int
-  order      Order   @relation(fields: [orderId], references: [id])
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id])
 
   // Define a relation to Product table
-  productId  Int
-  product    Product @relation(fields: [productId], references: [id])
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
 }
