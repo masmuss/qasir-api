@@ -9,13 +9,10 @@ export class CreateCustomerDto {
   })
   firstName: string;
 
-  @IsNotEmpty({
-    message: 'Last name field cannot be empty',
-  })
   @MinLength(3, {
     message: 'Last name field must be at least 3 characters long',
   })
-  lastName: string;
+  lastName?: string;
 
   @IsEmail(
     {

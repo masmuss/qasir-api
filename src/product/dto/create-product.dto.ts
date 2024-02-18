@@ -1,4 +1,5 @@
 import {
+  IsAlpha,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -10,8 +11,8 @@ export class CreateProductDto {
   @IsNotEmpty({
     message: 'Name field cannot be empty',
   })
-  @IsString()
-  @MinLength(5, {
+  @IsAlpha()
+  @MinLength(4, {
     message: 'Name field must be at least 5 characters long',
   })
   name: string;

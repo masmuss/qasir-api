@@ -11,34 +11,54 @@ export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    return this.prisma.customer.create({
-      data: createCustomerDto,
-    });
+    try {
+      return this.prisma.customer.create({
+        data: createCustomerDto,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async findAll(): Promise<Customer[]> {
-    return this.prisma.customer.findMany();
+    try {
+      return this.prisma.customer.findMany();
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async findOne(id: string): Promise<Customer | null> {
-    return this.prisma.customer.findUnique({
-      where: { id },
-    });
+    try {
+      return this.prisma.customer.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async update(
     id: string,
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer | null> {
-    return this.prisma.customer.update({
-      where: { id },
-      data: updateCustomerDto,
-    });
+    try {
+      return this.prisma.customer.update({
+        where: { id },
+        data: updateCustomerDto,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async remove(id: string): Promise<Customer> {
-    return this.prisma.customer.delete({
-      where: { id },
-    });
+    try {
+      return this.prisma.customer.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }

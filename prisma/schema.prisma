@@ -27,8 +27,8 @@ model Product {
 // Define the Customer table to store information about customers
 model Customer {
   id        String      @id @default(cuid())
-  firstName String
-  lastName  String
+  firstName String      @unique
+  lastName  String?      
   email     String?     @unique
   phone     String?     @unique
   createdAt DateTime    @default(now())
@@ -40,12 +40,12 @@ model Customer {
 
 // Define the Order table to represent sales orders
 model Order {
-  id         String      @id @default(uuid())
-  orderDate  DateTime
+  id         String       @id @default(uuid())
+  orderDate  DateTime     @default(now())
   total      Float
   status     OrderStatus
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   // Define a relation to Customer table
   customerId String

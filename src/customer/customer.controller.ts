@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 
 import { CustomerService } from './customer.service';
@@ -31,7 +31,7 @@ export class CustomerController {
     return this.customerService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,

@@ -10,34 +10,54 @@ export class ProductService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    return this.prisma.product.create({
-      data: createProductDto,
-    });
+    try {
+      return await this.prisma.product.create({
+        data: createProductDto,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async findAll(): Promise<Product[]> {
-    return this.prisma.product.findMany();
+    try {
+      return await this.prisma.product.findMany();
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async findOne(id: string): Promise<Product | null> {
-    return this.prisma.product.findUnique({
-      where: { id },
-    });
+    try {
+      return await this.prisma.product.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async update(
     id: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    return this.prisma.product.update({
-      where: { id },
-      data: updateProductDto,
-    });
+    try {
+      return this.prisma.product.update({
+        where: { id },
+        data: updateProductDto,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async remove(id: string): Promise<Product> {
-    return this.prisma.product.delete({
-      where: { id },
-    });
+    try {
+      return await this.prisma.product.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
