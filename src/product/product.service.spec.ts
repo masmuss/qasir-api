@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Product } from '@prisma/client';
 
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ProductService } from './product.service';
 
-jest.mock('src/prisma.service');
+jest.mock('src/prisma/prisma.service');
 describe('ProductService', () => {
   let service: ProductService;
   const productExample: Product = {

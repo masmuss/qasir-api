@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Define the Product table to store information about products
 model Product {
   id          String      @id @default(cuid())
   name        String      @unique
@@ -24,7 +20,6 @@ model Product {
   orderDetails OrderDetail[]
 }
 
-// Define the Customer table to store information about customers
 model Customer {
   id        String      @id @default(cuid())
   firstName String      @unique
@@ -38,7 +33,6 @@ model Customer {
   orders    Order[]
 }
 
-// Define the Order table to represent sales orders
 model Order {
   id         String       @id @default(uuid())
   orderDate  DateTime     @default(now())
@@ -55,14 +49,12 @@ model Order {
   orderDetails OrderDetail[]
 }
 
-// Define order status enum
 enum OrderStatus {
   PENDING
   COMPLETED
   CANCELLED
 }
 
-// Define the OrderDetail table to store details of each product in an order
 model OrderDetail {
   id         String      @id @default(cuid())
   quantity   Int
