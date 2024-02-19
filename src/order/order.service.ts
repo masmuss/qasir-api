@@ -13,13 +13,21 @@ export class OrderService {
     try {
       const calculatedOrderDetails = await Promise.all(
         createOrderDto.orderDetails.map(async (orderDetail) => {
-          const productPrice = await this.prisma.product.findUnique({
+          const product = await this.prisma.product.findUnique({
             where: { id: orderDetail.productId },
-            select: { price: true },
+            select: { price: true, stock: true },
           });
 
-          const countSubTotal: number =
-            orderDetail.quantity * productPrice.price;
+          const countSubTotal: number = orderDetail.quantity * product.price;
+
+          await this.prisma.product.update({
+            where: { id: orderDetail.productId },
+            data: {
+              stock: {
+                decrement: orderDetail.quantity,
+              },
+            },
+          });
 
           return {
             ...orderDetail,
