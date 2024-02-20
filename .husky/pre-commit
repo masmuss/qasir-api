@@ -1,5 +1,15 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn test
+echo "Running unit tests..."
+echo "Please be patient, this may take a while..."
+
+yarn test || (
+  echo "Unit tests failed, commit aborted"
+  exit 1
+)
+echo '🎉 No error found: committing this now.... ✨🚀🏄‍♂️🍻'
+
+echo '🏗️👷 Styling your project before committing'
 yarn lint-staged
+
