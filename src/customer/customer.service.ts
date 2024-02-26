@@ -12,7 +12,7 @@ export class CustomerService {
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
     try {
-      return this.prisma.customer.create({
+      return await this.prisma.customer.create({
         data: createCustomerDto,
       });
     } catch (error) {
@@ -22,7 +22,7 @@ export class CustomerService {
 
   async findAll(): Promise<Customer[]> {
     try {
-      return this.prisma.customer.findMany();
+      return await this.prisma.customer.findMany();
     } catch (error) {
       throw new Error(error);
     }
@@ -30,8 +30,11 @@ export class CustomerService {
 
   async findOne(id: string): Promise<Customer | null> {
     try {
-      return this.prisma.customer.findUnique({
+      return await this.prisma.customer.findUnique({
         where: { id },
+        include: {
+          orders: true,
+        },
       });
     } catch (error) {
       throw new Error(error);
@@ -43,7 +46,7 @@ export class CustomerService {
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer | null> {
     try {
-      return this.prisma.customer.update({
+      return await this.prisma.customer.update({
         where: { id },
         data: updateCustomerDto,
       });
@@ -54,7 +57,7 @@ export class CustomerService {
 
   async remove(id: string): Promise<Customer> {
     try {
-      return this.prisma.customer.delete({
+      return await this.prisma.customer.delete({
         where: { id },
       });
     } catch (error) {

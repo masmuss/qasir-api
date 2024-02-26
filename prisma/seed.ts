@@ -1,38 +1,55 @@
+import { fakerID_ID as faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
+import { Sql, sqltag } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.product.upsert({
-    where: { name: 'Cappucino' },
-    update: {},
-    create: {
-      name: 'Cappucino',
-      description: 'A delicious coffee with milk',
-      price: 15000,
-      stock: 10,
+  const truncateAllTable: Sql = sqltag`TRUNCATE TABLE "OrderDetail", "Order", "Customer", "Product", "Role" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw(truncateAllTable);
+
+  for (let i = 0; i < 10; i++) {
+    await prisma.product.create({
+      data: {
+        name: faker.commerce.productName(),
+        description: faker.commerce.productDescription(),
+        price: +faker.commerce.price({
+          dec: 2,
+        }),
+        stock: faker.number.int({
+          min: 50,
+          max: 100,
+        }),
+      },
+    });
+  }
+
+  for (let i = 0; i < 10; i++) {
+    await prisma.customer.create({
+      data: {
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        email: faker.internet.email(),
+        phone: faker.phone.number(),
+      },
+    });
+  }
+
+  await prisma.role.create({
+    data: {
+      name: 'ADMIN',
     },
   });
 
-  await prisma.product.upsert({
-    where: { name: 'Latte' },
-    update: {},
-    create: {
-      name: 'Latte',
-      description: 'A delicious coffee with milk',
-      price: 15000,
-      stock: 10,
+  await prisma.role.create({
+    data: {
+      name: 'MANAGER',
     },
   });
 
-  await prisma.product.upsert({
-    where: { name: 'Espresso' },
-    update: {},
-    create: {
-      name: 'Espresso',
-      description: 'A delicious coffee with milk',
-      price: 15000,
-      stock: 10,
+  await prisma.role.create({
+    data: {
+      name: 'CASHIER',
     },
   });
 }

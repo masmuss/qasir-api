@@ -1,14 +1,8 @@
 import { $Enums, OrderDetail } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEmpty, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsNotEmpty({
-    message: 'Total field cannot be empty',
-  })
-  @IsNumber({
-    allowInfinity: false,
-    allowNaN: false,
-  })
+  @IsEmpty()
   total: number;
 
   @IsNotEmpty({

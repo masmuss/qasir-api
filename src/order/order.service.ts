@@ -52,12 +52,13 @@ export class OrderService {
           0,
         );
 
-        await prisma.order.update({
+        const finalOrderData = await prisma.order.update({
           where: { id: orderWithDetails.id },
           data: { total },
+          include: { orderDetails: true },
         });
 
-        return orderWithDetails;
+        return finalOrderData;
       });
 
       return createdOrder;
