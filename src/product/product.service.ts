@@ -60,4 +60,22 @@ export class ProductService {
       throw new Error(error);
     }
   }
+
+  async getProductDetails(productId: string) {
+    return this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { price: true, stock: true },
+    });
+  }
+
+  async decrementProductStock(productId: string, quantity: number) {
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: {
+        stock: {
+          decrement: quantity,
+        },
+      },
+    });
+  }
 }

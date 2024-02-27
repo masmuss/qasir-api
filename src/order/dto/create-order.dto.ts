@@ -1,5 +1,11 @@
 import { $Enums, OrderDetail } from '@prisma/client';
-import { IsEmpty, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmpty,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateOrderDto {
   @IsEmpty()
@@ -13,9 +19,7 @@ export class CreateOrderDto {
   })
   status: $Enums.OrderStatus;
 
-  @IsNotEmpty({
-    message: 'Customer ID field cannot be empty',
-  })
+  @IsOptional()
   @IsString({
     message: 'Customer ID field must be a string',
   })
