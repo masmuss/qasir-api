@@ -1,73 +1,96 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
-// Define the Product table to store information about products
+model User {
+    id        String   @id @default(cuid())
+    name      String   @unique
+    username  String   @unique
+    email     String   @unique
+    password  String
+    roleId    Int      @default(3)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Define a relation to Role table
+    role Role @relation(fields: [roleId], references: [id])
+}
+
+model Role {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Define a relation to User table
+    users User[]
+}
+
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  price       Float
-  stock       Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+    id          String   @id @default(cuid())
+    name        String   @unique
+    description String?
+    price       Float
+    stock       Int      @default(0)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 
-  // Define a relation to OrderDetail table
-  orderDetails OrderDetail[]
+    // Define a relation to OrderDetail table
+    orderDetails OrderDetail[]
 }
 
-// Define the Customer table to store information about customers
 model Customer {
-  id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
-  email     String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(cuid())
+    firstName String   @unique
+    lastName  String?
+    email     String?  @unique
+    phone     String?  @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  // Define a relation to Order table
-  orders    Order[]
+    // Define a relation to Order table
+    orders Order[]
 }
 
-// Define the Order table to represent sales orders
 model Order {
-  id         Int      @id @default(autoincrement())
-  orderDate  DateTime
-  total      Float
-  status     String   // 'pending', 'completed', 'cancelled', etc.
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+    id        String        @id @default(uuid())
+    orderDate DateTime      @default(now())
+    total     Float         @default(0)
+    status    OrderStatus   @default(PENDING)
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
 
-  // Define a relation to Customer table
-  customerId Int
-  customer   Customer @relation(fields: [customerId], references: [id])
+    // Define a relation to Customer table
+    customerId String
+    customer   Customer     @relation(fields: [customerId], references: [id])
 
-  // Define a relation to OrderDetail table
-  orderDetails OrderDetail[]
+    // Define a relation to OrderDetail table
+    orderDetails OrderDetail[]
 }
 
-// Define the OrderDetail table to store details of each product in an order
+enum OrderStatus {
+    PENDING
+    COMPLETED
+    CANCELLED
+}
+
 model OrderDetail {
-  id         Int      @id @default(autoincrement())
-  quantity   Int
-  subtotal   Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+    id        String   @id @default(cuid())
+    quantity  Int
+    subtotal  Float
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  // Define a relation to Order table
-  orderId    Int
-  order      Order   @relation(fields: [orderId], references: [id])
+    // Define a relation to Order table
+    orderId String
+    order   Order  @relation(fields: [orderId], references: [id])
 
-  // Define a relation to Product table
-  productId  Int
-  product    Product @relation(fields: [productId], references: [id])
+    // Define a relation to Product table
+    productId String
+    product   Product @relation(fields: [productId], references: [id])
 }
