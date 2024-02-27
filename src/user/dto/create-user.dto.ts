@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsEmpty,
   IsNotEmpty,
+  IsString,
   IsStrongPassword,
   MinLength,
 } from 'class-validator';
@@ -11,7 +12,7 @@ export class CreateUserDto {
   @MinLength(4, {
     message: 'Name is too short',
   })
-  @IsAlpha()
+  @IsString()
   @IsNotEmpty()
   name: string;
 

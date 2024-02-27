@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
+import { CanAccessPublic } from 'decorators/public.decorator';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 import { AuthService } from './auth.service';
@@ -19,6 +20,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signin')
+  @CanAccessPublic()
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
