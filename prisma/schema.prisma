@@ -66,8 +66,8 @@ model Order {
     updatedAt DateTime      @updatedAt
 
     // Define a relation to Customer table
-    customerId String
-    customer   Customer     @relation(fields: [customerId], references: [id])
+    customerId String?
+    customer   Customer?    @relation(fields: [customerId], references: [id])
 
     // Define a relation to OrderDetail table
     orderDetails OrderDetail[]
@@ -82,7 +82,7 @@ enum OrderStatus {
 model OrderDetail {
     id        String   @id @default(cuid())
     quantity  Int
-    subtotal  Float
+    subtotal  Float?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

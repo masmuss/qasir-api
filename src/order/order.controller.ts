@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 
+import { CanAccessPublic } from 'decorators/public.decorator';
 import { CanAccessWithRoles } from 'decorators/role.decorator';
 import { Role } from 'enums/role.enum';
 
@@ -24,6 +25,7 @@ export class OrderController {
 
   @Get(':id')
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER, Role.CASHIER)
+  @CanAccessPublic()
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(id);
   }
