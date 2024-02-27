@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -57,13 +57,21 @@ export class AuthService {
 
       return true;
     } catch (error) {
-      throw new Error(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.username, loginDto.password);
-    const payload = { username: user.username, sub: { name: user.name } };
+    const payload = {
+      username: user.username,
+      sub: {
+        name: user.name,
+        username: user.username,
+        roleId: user.roleId,
+      },
+      roleId: user.roleId,
+    };
 
     return {
       ...user,
@@ -79,6 +87,8 @@ export class AuthService {
       username: user.email,
       sub: {
         name: user.name,
+        username: user.username,
+        roleId: user.roleId,
       },
     };
 

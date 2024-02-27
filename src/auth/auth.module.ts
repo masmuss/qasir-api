@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
@@ -17,6 +18,11 @@ import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
       signOptions: {
         expiresIn: '1h',
       },
+    }),
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+      property: 'user',
+      session: false,
     }),
   ],
   controllers: [AuthController],

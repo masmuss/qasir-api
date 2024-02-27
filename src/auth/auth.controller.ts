@@ -1,9 +1,18 @@
-import { Body, Controller, Post, Response } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  Response,
+  UseGuards,
+} from '@nestjs/common';
 
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/log-in.dto';
+import { JwtGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,5 +29,11 @@ export class AuthController {
 
     if (result) return response.status(201).send({ message: 'User created' });
     return response.status(400).send();
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }
