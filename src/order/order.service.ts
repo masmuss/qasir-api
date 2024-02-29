@@ -1,70 +1,85 @@
 import { Injectable } from '@nestjs/common';
-import { Order } from '@prisma/client';
+import { Order, OrderDetail } from '@prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ProductService } from 'src/product/product.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly productService: ProductService,
+  ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
     try {
-      const calculatedOrderDetails = await Promise.all(
-        createOrderDto.orderDetails.map(async (orderDetail) => {
-          const product = await this.prisma.product.findUnique({
-            where: { id: orderDetail.productId },
-            select: { price: true, stock: true },
-          });
+      const calculatedOrderDetails =
+        await this.calculateOrderDetails(createOrderDto);
 
-          const countSubTotal: number = orderDetail.quantity * product.price;
-
-          await this.prisma.product.update({
-            where: { id: orderDetail.productId },
-            data: {
-              stock: {
-                decrement: orderDetail.quantity,
-              },
-            },
-          });
-
-          return {
-            ...orderDetail,
-            subtotal: countSubTotal,
-          };
-        }),
-      );
-
-      const createdOrder = await this.prisma.$transaction(async (prisma) => {
-        const orderWithDetails = await prisma.order.create({
-          data: {
-            ...createOrderDto,
-            orderDetails: {
-              create: calculatedOrderDetails,
-            },
-          },
-          include: { orderDetails: true },
-        });
-
-        const total = orderWithDetails.orderDetails.reduce(
-          (sum, detail) => sum + detail.subtotal,
-          0,
+      const createdOrder = await this.prisma.$transaction(async () => {
+        const orderWithDetails = await this.createOrderAndDetails(
+          createOrderDto,
+          calculatedOrderDetails,
         );
 
-        const finalOrderData = await prisma.order.update({
-          where: { id: orderWithDetails.id },
-          data: { total },
-          include: { orderDetails: true },
-        });
+        const total = this.calculateTotal(orderWithDetails.orderDetails);
 
-        return finalOrderData;
+        return this.updateOrderTotal(orderWithDetails.id, total);
       });
 
       return createdOrder;
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  private async calculateOrderDetails(createOrderDto: CreateOrderDto) {
+    return Promise.all(
+      createOrderDto.orderDetails.map(async (orderDetail: OrderDetail) => {
+        const product = await this.productService.findOne(
+          orderDetail.productId,
+        );
+        const countSubTotal: number = orderDetail.quantity * product.price;
+
+        await this.productService.update(orderDetail.productId, {
+          stock: product.stock - orderDetail.quantity,
+        });
+
+        return {
+          ...orderDetail,
+          subtotal: countSubTotal,
+        };
+      }),
+    );
+  }
+
+  private async createOrderAndDetails(
+    createOrderDto: CreateOrderDto,
+    calculatedOrderDetails: any,
+  ) {
+    return this.prisma.order.create({
+      data: {
+        ...createOrderDto,
+        orderDetails: {
+          create: calculatedOrderDetails,
+        },
+      },
+      include: { orderDetails: true },
+    });
+  }
+
+  private calculateTotal(orderDetails: OrderDetail[]) {
+    return orderDetails.reduce((sum, detail) => sum + detail.subtotal, 0);
+  }
+
+  private updateOrderTotal(orderId: string, total: number) {
+    return this.prisma.order.update({
+      where: { id: orderId },
+      data: { total },
+      include: { orderDetails: true },
+    });
   }
 
   async findAll(): Promise<Order[]> {
@@ -87,18 +102,6 @@ export class OrderService {
       throw new Error(error);
     }
   }
-
-  // async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
-  //   try {
-  //     return this.prisma.order.update({
-  //       where: { id },
-  //       data: updateOrderDto,
-  //       include: { orderDetails: true },
-  //     });
-  //   } catch (error) {
-  //     throw new Error(error);
-  //   }
-  // }
 
   async remove(id: string): Promise<Order> {
     try {

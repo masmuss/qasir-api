@@ -4,12 +4,10 @@ import {
   Get,
   Post,
   Request,
-  Response,
   UseGuards,
 } from '@nestjs/common';
 
 import { CanAccessPublic } from 'decorators/public.decorator';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/log-in.dto';
@@ -23,14 +21,6 @@ export class AuthController {
   @CanAccessPublic()
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
-  }
-
-  @Post('signup')
-  async signup(@Body() createUser: CreateUserDto, @Response() response) {
-    const result: boolean = await this.authService.signup(createUser);
-
-    if (result) return response.status(201).send({ message: 'User created' });
-    return response.status(400).send();
   }
 
   @UseGuards(JwtGuard)

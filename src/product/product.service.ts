@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Product } from '@prisma/client';
 
 import { CreateProductDto } from './dto/create-product.dto';
+import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -19,9 +20,40 @@ export class ProductService {
     }
   }
 
-  async findAll(): Promise<Product[]> {
+  private convertToPrismaWhere(filter: FilterProductDto): Record<string, any> {
+    const where: Record<string, any> = {};
+
+    if (filter.category) where.categoryId = filter.category;
+    if (filter.name) where.name = { contains: filter.name };
+
+    return where;
+  }
+
+  private convertToPrismaOrderBy(
+    filter: FilterProductDto,
+  ): Record<string, 'asc' | 'desc'> | undefined {
+    if (filter.sortBy) {
+      const order: Record<string, 'asc' | 'desc'> = {};
+      order[filter.sortBy] = filter.sortOrder || 'asc';
+      return order;
+    }
+    return undefined;
+  }
+
+  async findAll(filter?: FilterProductDto): Promise<Product[]> {
     try {
-      return await this.prisma.product.findMany();
+      const where = this.convertToPrismaWhere(filter);
+      const orderBy = this.convertToPrismaOrderBy(filter);
+
+      return this.prisma.product.findMany({
+        where,
+        orderBy,
+        include: {
+          category: {
+            select: { name: true },
+          },
+        },
+      });
     } catch (error) {
       throw new Error(error);
     }

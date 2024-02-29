@@ -6,12 +6,14 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 
 import { CanAccessWithRoles } from 'decorators/role.decorator';
 import { Role } from 'enums/role.enum';
 
 import { CreateProductDto } from './dto/create-product.dto';
+import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
@@ -27,8 +29,8 @@ export class ProductController {
 
   @Get()
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER, Role.CASHIER)
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Query() filterProductDto?: FilterProductDto) {
+    return this.productService.findAll(filterProductDto);
   }
 
   @Get(':id')
