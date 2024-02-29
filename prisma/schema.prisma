@@ -40,8 +40,22 @@ model Product {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
+    // Define a relation to ProductCategory table
+    categoryId String?
+    category   ProductCategory? @relation(fields: [categoryId], references: [id])
+
     // Define a relation to OrderDetail table
     orderDetails OrderDetail[]
+}
+
+model ProductCategory {
+    id        String   @id @default(cuid())
+    name      String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Define a relation to Product table
+    products Product[]
 }
 
 model Customer {
