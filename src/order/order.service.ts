@@ -38,15 +38,14 @@ export class OrderService {
   private async calculateOrderDetails(createOrderDto: CreateOrderDto) {
     return Promise.all(
       createOrderDto.orderDetails.map(async (orderDetail: OrderDetail) => {
-        const product = await this.productService.getProductDetails(
+        const product = await this.productService.findOne(
           orderDetail.productId,
         );
         const countSubTotal: number = orderDetail.quantity * product.price;
 
-        await this.productService.decrementProductStock(
-          orderDetail.productId,
-          orderDetail.quantity,
-        );
+        await this.productService.update(orderDetail.productId, {
+          stock: product.stock - orderDetail.quantity,
+        });
 
         return {
           ...orderDetail,
@@ -103,18 +102,6 @@ export class OrderService {
       throw new Error(error);
     }
   }
-
-  // async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
-  //   try {
-  //     return this.prisma.order.update({
-  //       where: { id },
-  //       data: updateOrderDto,
-  //       include: { orderDetails: true },
-  //     });
-  //   } catch (error) {
-  //     throw new Error(error);
-  //   }
-  // }
 
   async remove(id: string): Promise<Order> {
     try {

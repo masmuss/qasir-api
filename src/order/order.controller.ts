@@ -30,11 +30,6 @@ export class OrderController {
     return this.orderService.findOne(id);
   }
 
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-  //   return this.orderService.update(id, updateOrderDto);
-  // }
-
   @Delete(':id')
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER)
   remove(@Param('id') id: string) {
