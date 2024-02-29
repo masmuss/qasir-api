@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 
-import { CanAccessPublic } from 'decorators/public.decorator';
-import { CanAccessWithRoles } from 'decorators/role.decorator';
-import { Role } from 'enums/role.enum';
+import { CanAccessPublic } from 'src/auth/decorators/public.decorator';
+import { CanAccessWithRoles } from 'src/auth/decorators/role.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
