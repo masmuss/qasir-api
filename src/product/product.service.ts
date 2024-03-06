@@ -74,7 +74,7 @@ export class ProductService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     try {
-      return this.prisma.product.update({
+      return await this.prisma.product.update({
         where: { id },
         data: updateProductDto,
       });
