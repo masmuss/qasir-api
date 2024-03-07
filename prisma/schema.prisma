@@ -41,7 +41,7 @@ model Product {
     updatedAt   DateTime @updatedAt
 
     // Define a relation to ProductCategory table
-    categoryId String?
+    categoryId Int?
     category   ProductCategory? @relation(fields: [categoryId], references: [id])
 
     // Define a relation to OrderDetail table
@@ -49,7 +49,7 @@ model Product {
 }
 
 model ProductCategory {
-    id        String   @id @default(cuid())
+    id        Int      @id @default(autoincrement())
     name      String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -72,12 +72,12 @@ model Customer {
 }
 
 model Order {
-    id        String        @id @default(uuid())
-    orderDate DateTime      @default(now())
-    total     Float         @default(0)
-    status    OrderStatus   @default(PENDING)
-    createdAt DateTime      @default(now())
-    updatedAt DateTime      @updatedAt
+    id          String        @id @default(uuid())
+    code        String        @unique
+    total       Float         @default(0)
+    status      OrderStatus   @default(PENDING)
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
 
     // Define a relation to Customer table
     customerId String?
