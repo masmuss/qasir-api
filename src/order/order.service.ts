@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductService } from 'src/product/product.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
+import { FilterOrderDto } from './dto/filter-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -35,6 +36,30 @@ export class OrderService {
     }
   }
 
+  private async generateOrderCode(): Promise<string> {
+    const randomChars = Math.random()
+      .toString(36)
+      .substring(2, 5)
+      .toUpperCase();
+    const year = new Date().getFullYear().toString().slice(-2);
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+    const date = new Date().getDate().toString().padStart(2, '0');
+    const today = new Date().toISOString().split('T')[0];
+    const existingOrdersCount = await this.prisma.order.count({
+      where: {
+        createdAt: {
+          gte: new Date(today),
+          lt: new Date(new Date(today).getTime() + 24 * 60 * 60 * 1000),
+        },
+      },
+    });
+
+    // Mendapatkan 3 digit urutan transaksi di hari itu (dengan padding)
+    const sequence = existingOrdersCount.toString().padStart(3, '0');
+
+    return `${randomChars}${year}${month}${date}${sequence}`;
+  }
+
   private async calculateOrderDetails(createOrderDto: CreateOrderDto) {
     return Promise.all(
       createOrderDto.orderDetails.map(async (orderDetail: OrderDetail) => {
@@ -43,9 +68,11 @@ export class OrderService {
         );
         const countSubTotal: number = orderDetail.quantity * product.price;
 
-        await this.productService.update(orderDetail.productId, {
-          stock: product.stock - orderDetail.quantity,
-        });
+        if (createOrderDto.status !== 'CANCELLED') {
+          await this.productService.update(orderDetail.productId, {
+            stock: product.stock - orderDetail.quantity,
+          });
+        }
 
         return {
           ...orderDetail,
@@ -62,6 +89,7 @@ export class OrderService {
     return this.prisma.order.create({
       data: {
         ...createOrderDto,
+        code: await this.generateOrderCode(),
         orderDetails: {
           create: calculatedOrderDetails,
         },
@@ -78,14 +106,49 @@ export class OrderService {
     return this.prisma.order.update({
       where: { id: orderId },
       data: { total },
-      include: { orderDetails: true },
+      include: { orderDetails: { include: { product: true } } },
     });
   }
 
-  async findAll(): Promise<Order[]> {
+  private convertToPrismaWhere(filter: FilterOrderDto): Record<string, any> {
+    const where: Record<string, any> = {};
+
+    if (filter.status) where.status = filter.status;
+    if (filter.startDate) where.createdAt = { gte: filter.startDate };
+    if (filter.endDate)
+      where.createdAt = { ...where.createdAt, lte: filter.endDate };
+
+    return where;
+  }
+
+  private convertToPrismaOrderBy(
+    filter: FilterOrderDto,
+  ): Record<string, 'asc' | 'desc'> | undefined {
+    if (filter.orderBy) {
+      const order: Record<string, 'asc' | 'desc'> = {};
+      order[filter.orderBy] = filter.order || 'asc';
+      return order;
+    }
+    return undefined;
+  }
+
+  async findAll(filter?: FilterOrderDto): Promise<Order[]> {
     try {
+      const where = this.convertToPrismaWhere(filter);
+      const orderBy = this.convertToPrismaOrderBy(filter);
+
       return await this.prisma.order.findMany({
-        include: { orderDetails: true },
+        where,
+        orderBy,
+        include: {
+          orderDetails: {
+            include: {
+              product: {
+                select: { name: true },
+              },
+            },
+          },
+        },
       });
     } catch (error) {
       throw new Error(error);

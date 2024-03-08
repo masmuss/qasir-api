@@ -14,6 +14,11 @@ export class ProductService {
     try {
       return await this.prisma.product.create({
         data: createProductDto,
+        include: {
+          category: {
+            select: { name: true },
+          },
+        },
       });
     } catch (error) {
       throw new Error(error);
@@ -23,7 +28,7 @@ export class ProductService {
   private convertToPrismaWhere(filter: FilterProductDto): Record<string, any> {
     const where: Record<string, any> = {};
 
-    if (filter.category) where.categoryId = filter.category;
+    if (filter.category) where.categoryId = +filter.category;
     if (filter.name) where.name = { contains: filter.name };
 
     return where;
@@ -32,9 +37,9 @@ export class ProductService {
   private convertToPrismaOrderBy(
     filter: FilterProductDto,
   ): Record<string, 'asc' | 'desc'> | undefined {
-    if (filter.sortBy) {
+    if (filter.orderBy) {
       const order: Record<string, 'asc' | 'desc'> = {};
-      order[filter.sortBy] = filter.sortOrder || 'asc';
+      order[filter.orderBy] = filter.order || 'asc';
       return order;
     }
     return undefined;
@@ -45,7 +50,7 @@ export class ProductService {
       const where = this.convertToPrismaWhere(filter);
       const orderBy = this.convertToPrismaOrderBy(filter);
 
-      return this.prisma.product.findMany({
+      return await this.prisma.product.findMany({
         where,
         orderBy,
         include: {
@@ -63,6 +68,11 @@ export class ProductService {
     try {
       return await this.prisma.product.findUnique({
         where: { id },
+        include: {
+          category: {
+            select: { name: true },
+          },
+        },
       });
     } catch (error) {
       throw new Error(error);
@@ -74,7 +84,7 @@ export class ProductService {
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     try {
-      return this.prisma.product.update({
+      return await this.prisma.product.update({
         where: { id },
         data: updateProductDto,
       });

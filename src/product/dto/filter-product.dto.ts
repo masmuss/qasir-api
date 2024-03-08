@@ -22,9 +22,9 @@ export class FilterProductDto {
 
   @IsOptional()
   @IsString()
-  sortBy?: 'name' | 'price' | 'stock' | 'createdAt';
+  orderBy?: 'name' | 'price' | 'stock' | 'createdAt';
 
   @IsOptional()
   @IsIn(['asc', 'desc'])
-  sortOrder?: 'asc' | 'desc';
+  order?: 'asc' | 'desc';
 }

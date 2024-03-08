@@ -1,10 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 
 import { CanAccessPublic } from 'src/auth/decorators/public.decorator';
 import { CanAccessWithRoles } from 'src/auth/decorators/role.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 
 import { CreateOrderDto } from './dto/create-order.dto';
+import { FilterOrderDto } from './dto/filter-order.dto';
 import { OrderService } from './order.service';
 
 @Controller('order')
@@ -19,8 +28,8 @@ export class OrderController {
 
   @Get()
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER, Role.CASHIER)
-  findAll() {
-    return this.orderService.findAll();
+  findAll(@Query() filterOrderDto?: FilterOrderDto) {
+    return this.orderService.findAll(filterOrderDto);
   }
 
   @Get(':id')
