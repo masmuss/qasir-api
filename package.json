@@ -5,11 +5,11 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-  "main": "dist/main",
+  "main": "dist/src/main.js",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "node dist/main",
+    "start": "node dist/src/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "nest start",
