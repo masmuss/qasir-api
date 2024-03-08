@@ -54,7 +54,6 @@ export class OrderService {
       },
     });
 
-    // Mendapatkan 3 digit urutan transaksi di hari itu (dengan padding)
     const sequence = existingOrdersCount.toString().padStart(3, '0');
 
     return `${randomChars}${year}${month}${date}${sequence}`;
