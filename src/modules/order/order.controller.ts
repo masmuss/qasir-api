@@ -8,9 +8,9 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { CanAccessPublic } from 'src/auth/decorators/public.decorator';
-import { CanAccessWithRoles } from 'src/auth/decorators/role.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { CanAccessPublic } from 'src/modules/auth/decorators/public.decorator';
+import { CanAccessWithRoles } from 'src/modules/auth/decorators/role.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { FilterOrderDto } from './dto/filter-order.dto';

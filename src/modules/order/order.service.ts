@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Order, OrderDetail } from '@prisma/client';
 
-import { PrismaService } from 'src/prisma.service';
-import { ProductService } from 'src/product/product.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { ProductService } from 'src/modules/product/product.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { FilterOrderDto } from './dto/filter-order.dto';

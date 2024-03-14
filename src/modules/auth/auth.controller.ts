@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { CanAccessPublic } from 'src/auth/decorators/public.decorator';
+import { CanAccessPublic } from 'src/modules/auth/decorators/public.decorator';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/log-in.dto';

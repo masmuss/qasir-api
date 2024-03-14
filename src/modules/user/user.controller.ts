@@ -9,9 +9,9 @@ import {
   Response,
 } from '@nestjs/common';
 
-import { AuthService } from 'src/auth/auth.service';
-import { CanAccessWithRoles } from 'src/auth/decorators/role.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { AuthService } from 'src/modules/auth/auth.service';
+import { CanAccessWithRoles } from 'src/modules/auth/decorators/role.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

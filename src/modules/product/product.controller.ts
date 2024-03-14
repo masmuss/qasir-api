@@ -9,8 +9,8 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { CanAccessWithRoles } from 'src/auth/decorators/role.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { CanAccessWithRoles } from 'src/modules/auth/decorators/role.decorator';
+import { Role } from 'src/modules/auth/enums/role.enum';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
