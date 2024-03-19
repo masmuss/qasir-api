@@ -7,9 +7,9 @@ import { UserService } from 'src/modules/user/user.service';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
-import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
+import { JwtStrategy } from '../../core/strategies/jwt.strategy';
+import { LocalStrategy } from '../../core/strategies/local.strategy';
+import { RefreshJwtStrategy } from '../../core/strategies/refreshToken.strategy';
 
 @Module({
   imports: [

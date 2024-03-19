@@ -7,11 +7,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { CanAccessPublic } from 'src/modules/auth/decorators/public.decorator';
+import { CanAccessPublic } from 'src/core/decorators/public.decorator';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/log-in.dto';
-import { JwtGuard } from './guards/jwt-auth.guard';
+import { JwtGuard } from '../../core/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +26,10 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
+    const authHeader = req.headers.authorization;
+    if (authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      return this.authService.decodeTokenFromHeader(token);
+    }
   }
 }

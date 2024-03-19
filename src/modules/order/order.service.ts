@@ -89,6 +89,7 @@ export class OrderService {
       data: {
         ...createOrderDto,
         code: await this.generateOrderCode(),
+        userId: createOrderDto.userId,
         orderDetails: {
           create: calculatedOrderDetails,
         },

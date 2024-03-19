@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 
 import { AppService } from './app.service';
-import { CanAccessPublic } from './auth/decorators/public.decorator';
+import { CanAccessPublic } from '../core/decorators/public.decorator';
 
 @Controller()
 export class AppController {

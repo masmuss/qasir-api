@@ -3,7 +3,6 @@ export class OrderDetail {
   productId: string;
   quantity: number;
   subtotal: number;
-  orderId: string;
   createdAt: Date;
   updatedAt: Date;
 }

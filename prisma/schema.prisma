@@ -9,27 +9,34 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(cuid())
-    name      String   @unique
-    username  String   @unique
-    email     String   @unique
-    password  String
-    roleId    Int      @default(3)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id          String      @id @default(cuid())
+    name        String      @unique
+    username    String      @unique
+    email       String      @unique
+    password    String
+    roleId      Int         @default(3)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
 
     // Define a relation to Role table
-    role Role @relation(fields: [roleId], references: [id])
+    role        Role        @relation(fields: [roleId], references: [id])
+
+    // Define a relation to Order table
+    orders Order[]
+
+    @@map("users")
 }
 
 model Role {
-    id        Int      @id @default(autoincrement())
-    name      String   @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id          Int      @id @default(autoincrement())
+    name        String   @unique
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 
     // Define a relation to User table
-    users User[]
+    users       User[]
+    
+    @@map("roles")
 }
 
 model Product {
@@ -47,6 +54,7 @@ model Product {
 
     // Define a relation to OrderDetail table
     orderDetails OrderDetail[]
+    @@map("products")
 }
 
 model ProductCategory {
@@ -57,6 +65,7 @@ model ProductCategory {
 
     // Define a relation to Product table
     products Product[]
+    @@map("product_categories")
 }
 
 model Customer {
@@ -70,6 +79,7 @@ model Customer {
 
     // Define a relation to Order table
     orders Order[]
+    @@map("customers")
 }
 
 model Order {
@@ -80,12 +90,18 @@ model Order {
     createdAt   DateTime      @default(now())
     updatedAt   DateTime      @updatedAt
 
-    // Define a relation to Customer table
-    customerId String?
-    customer   Customer?    @relation(fields: [customerId], references: [id])
-
     // Define a relation to OrderDetail table
     orderDetails OrderDetail[]
+
+    // Define a relation to Customer table
+    customerId  String?
+    customer    Customer?    @relation(fields: [customerId], references: [id])
+
+    // Define a relation to User table
+    userId      String
+    user        User        @relation(fields: [userId], references: [id])
+
+    @@map("orders")
 }
 
 enum OrderStatus {
@@ -95,17 +111,19 @@ enum OrderStatus {
 }
 
 model OrderDetail {
-    id        String   @id @default(cuid())
-    quantity  Int
-    subtotal  Float?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id          String   @id @default(cuid())
+    quantity    Int
+    subtotal    Float?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 
     // Define a relation to Order table
-    orderId String
-    order   Order  @relation(fields: [orderId], references: [id])
+    orderId     String
+    order       Order  @relation(fields: [orderId], references: [id])
 
     // Define a relation to Product table
-    productId String
-    product   Product @relation(fields: [productId], references: [id])
+    productId   String
+    product     Product @relation(fields: [productId], references: [id])
+
+    @@map("order_details")
 }

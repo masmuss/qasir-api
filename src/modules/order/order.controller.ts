@@ -6,11 +6,14 @@ import {
   Param,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 
-import { CanAccessPublic } from 'src/modules/auth/decorators/public.decorator';
-import { CanAccessWithRoles } from 'src/modules/auth/decorators/role.decorator';
-import { Role } from 'src/modules/auth/enums/role.enum';
+import { CanAccessPublic } from 'src/core/decorators/public.decorator';
+import { CanAccessWithRoles } from 'src/core/decorators/role.decorator';
+import { Role } from 'src/core/enums/role.enum';
+import { AuthService } from 'src/modules/auth/auth.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { FilterOrderDto } from './dto/filter-order.dto';
@@ -18,11 +21,18 @@ import { OrderService } from './order.service';
 
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
   @CanAccessWithRoles(Role.CASHIER)
-  create(@Body() createOrderDto: CreateOrderDto) {
+  create(@Req() req: Request, @Body() createOrderDto: CreateOrderDto) {
+    const user = this.authService.decodeTokenFromHeader(
+      req.headers.authorization,
+    );
+    console.log('req.headers ', user);
     return this.orderService.create(createOrderDto);
   }
 

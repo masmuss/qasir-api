@@ -3,8 +3,8 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
-import { ROLES_KEY } from 'src/modules/auth/decorators/role.decorator';
-import { Role } from 'src/modules/auth/enums/role.enum';
+import { ROLES_KEY } from 'src/core/decorators/role.decorator';
+import { Role } from 'src/core/enums/role.enum';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
     if (!token) return false;
 
     const payload = await this.verifyToken(token);
-    return requiredRoles.some((role) => payload.roleId === role);
+    return requiredRoles.some((role) => payload.sub.roleId === role);
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

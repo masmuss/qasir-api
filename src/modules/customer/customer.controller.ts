@@ -8,8 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 
-import { CanAccessWithRoles } from 'src/modules/auth/decorators/role.decorator';
-import { Role } from 'src/modules/auth/enums/role.enum';
+import { CanAccessWithRoles } from 'src/core/decorators/role.decorator';
+import { Role } from 'src/core/enums/role.enum';
 
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';

@@ -15,11 +15,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async hashPassword(password: string): Promise<string> {
+  private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
   }
 
-  async comparePassword(password: string, hash: string): Promise<boolean> {
+  private async comparePassword(
+    password: string,
+    hash: string,
+  ): Promise<boolean> {
     return await bcrypt.compare(password, hash);
   }
 
@@ -64,18 +67,17 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.username, loginDto.password);
     const payload = {
-      username: user.username,
+      id: user.id,
       sub: {
         name: user.name,
         username: user.username,
         roleId: user.roleId,
       },
-      roleId: user.roleId,
     };
 
     return {
       ...user,
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: '1d' }),
       refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
   }
@@ -84,7 +86,7 @@ export class AuthService {
     accessToken: string;
   }> {
     const payload = {
-      username: user.email,
+      id: user.id,
       sub: {
         name: user.name,
         username: user.username,
@@ -95,5 +97,15 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
     };
+  }
+
+  async decodeTokenFromHeader(token: string) {
+    return this.jwtService.decode<Record<string, unknown>>(token);
+  }
+
+  async getUserIdFromToken(token: string) {
+    const payload: Record<string, unknown> =
+      this.jwtService.decode<Record<string, unknown>>(token);
+    return payload.id;
   }
 }
