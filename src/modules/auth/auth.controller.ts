@@ -6,12 +6,14 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { plainToClass, plainToInstance } from 'class-transformer';
 
 import { CanAccessPublic } from 'src/core/decorators/public.decorator';
+import { JwtGuard } from 'src/core/guards/jwt-auth.guard';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/log-in.dto';
-import { JwtGuard } from '../../core/guards/jwt-auth.guard';
+import { AuthResponseDto, AuthUserResponseDto } from './dto/response-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -20,16 +22,15 @@ export class AuthController {
   @Post('signin')
   @CanAccessPublic()
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    const result = this.authService.login(loginDto);
+    return plainToInstance(AuthResponseDto, result);
   }
 
   @UseGuards(JwtGuard)
   @Get('profile')
   getProfile(@Request() req) {
     const authHeader = req.headers.authorization;
-    if (authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      return this.authService.decodeTokenFromHeader(token);
-    }
+    const user = this.authService.decodeTokenFromHeader(authHeader);
+    return plainToClass(AuthUserResponseDto, user);
   }
 }
