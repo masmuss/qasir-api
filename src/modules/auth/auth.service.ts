@@ -99,8 +99,11 @@ export class AuthService {
     };
   }
 
-  async decodeTokenFromHeader(token: string) {
-    return this.jwtService.decode<Record<string, unknown>>(token);
+  decodeTokenFromHeader(token: string) {
+    if (token && token.startsWith('Bearer ')) {
+      const tokenString = token.substring(7);
+      return this.jwtService.decode(tokenString);
+    }
   }
 
   async getUserIdFromToken(token: string) {

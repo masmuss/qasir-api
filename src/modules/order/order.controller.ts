@@ -32,7 +32,7 @@ export class OrderController {
     const user = this.authService.decodeTokenFromHeader(
       req.headers.authorization,
     );
-    console.log('req.headers ', user);
+    createOrderDto.userId = user.id;
     return this.orderService.create(createOrderDto);
   }
 

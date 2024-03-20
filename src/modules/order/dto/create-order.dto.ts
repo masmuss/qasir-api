@@ -25,9 +25,6 @@ export class CreateOrderDto {
   })
   customerId?: string;
 
-  @IsNotEmpty({
-    message: 'User ID field cannot be empty',
-  })
   userId: string;
 
   @IsNotEmpty({
