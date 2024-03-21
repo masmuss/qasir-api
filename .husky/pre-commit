@@ -11,5 +11,5 @@ yarn test || (
 echo '🎉 No error found: committing this now.... ✨🚀🏄‍♂️🍻'
 
 echo '🏗️👷 Styling your project before committing'
-yarn lint-staged
+yarn lint
 
