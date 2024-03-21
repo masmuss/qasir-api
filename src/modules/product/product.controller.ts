@@ -8,12 +8,15 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { Product } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
 
 import { CanAccessWithRoles } from 'src/core/decorators/role.decorator';
 import { Role } from 'src/core/enums/role.enum';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
+import { ProductResponseDto } from './dto/response-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
@@ -24,19 +27,24 @@ export class ProductController {
   @Post()
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER)
   create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+    const newProduct: Promise<Product> =
+      this.productService.create(createProductDto);
+    return plainToInstance(ProductResponseDto, newProduct);
   }
 
   @Get()
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER, Role.CASHIER)
   findAll(@Query() filterProductDto?: FilterProductDto) {
-    return this.productService.findAll(filterProductDto);
+    const products: Promise<Product[]> =
+      this.productService.findAll(filterProductDto);
+    return plainToInstance(ProductResponseDto, products);
   }
 
   @Get(':id')
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER, Role.CASHIER)
   findOne(@Param('id') id: string) {
-    return this.productService.findOne(id);
+    const product = this.productService.findOne(id);
+    return plainToInstance(ProductResponseDto, product);
   }
 
   @Put(':id')

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Product } from '@prisma/client';
-
-import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
@@ -55,9 +54,7 @@ export class ProductService {
         where,
         orderBy,
         include: {
-          category: {
-            select: { name: true },
-          },
+          category: true,
         },
       });
     } catch (error) {
@@ -70,9 +67,7 @@ export class ProductService {
       return await this.prisma.product.findUnique({
         where: { id },
         include: {
-          category: {
-            select: { name: true },
-          },
+          category: true,
         },
       });
     } catch (error) {
