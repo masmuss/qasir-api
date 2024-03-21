@@ -9,7 +9,7 @@ import userCollection from './collection/users.collection';
 const prisma = new PrismaClient();
 
 async function main() {
-  const truncateAllTable: Sql = sqltag`TRUNCATE TABLE "order_details", "orders", "customers", "products", "roles" RESTART IDENTITY CASCADE;`;
+  const truncateAllTable: Sql = sqltag`TRUNCATE TABLE "order_details", "orders", "customers", "product_categories", "products", "roles" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw(truncateAllTable);
 
   await roleCollection();

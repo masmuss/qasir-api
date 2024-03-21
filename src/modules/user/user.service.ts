@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
-
-import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,7 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
   async findAll(): Promise<User[]> {
-    return await this.prisma.user.findMany({
+    return this.prisma.user.findMany({
       include: {
         role: {
           select: {
@@ -34,7 +33,7 @@ export class UserService {
   }
 
   async findOneByUsername(username: string): Promise<User> {
-    return await this.prisma.user.findUnique({
+    return this.prisma.user.findUnique({
       where: {
         username,
       },
