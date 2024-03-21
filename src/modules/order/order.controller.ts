@@ -8,6 +8,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { Request } from 'express';
 
 import { CanAccessPublic } from 'src/core/decorators/public.decorator';
@@ -17,6 +18,7 @@ import { AuthService } from 'src/modules/auth/auth.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { FilterOrderDto } from './dto/filter-order.dto';
+import { OrderResponseDto } from './dto/response-order.dto';
 import { OrderService } from './order.service';
 
 @Controller('order')
@@ -33,20 +35,24 @@ export class OrderController {
       req.headers.authorization,
     );
     createOrderDto.userId = user.id;
-    return this.orderService.create(createOrderDto);
+    const newOrder = this.orderService.create(createOrderDto);
+
+    return plainToInstance(OrderResponseDto, newOrder);
   }
 
   @Get()
   @CanAccessWithRoles(Role.ADMIN, Role.MANAGER, Role.CASHIER)
   findAll(@Query() filterOrderDto?: FilterOrderDto) {
-    return this.orderService.findAll(filterOrderDto);
+    const orders = this.orderService.findAll(filterOrderDto);
+
+    return plainToInstance(OrderResponseDto, orders);
   }
 
   @Get(':id')
-  @CanAccessWithRoles(Role.ADMIN, Role.MANAGER, Role.CASHIER)
   @CanAccessPublic()
   findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+    const order = this.orderService.findOne(id);
+    return plainToInstance(OrderResponseDto, order);
   }
 
   @Delete(':id')
