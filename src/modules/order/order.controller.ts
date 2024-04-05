@@ -32,7 +32,7 @@ export class OrderController {
   @CanAccessWithRoles(Role.CASHIER)
   create(@Req() req: Request, @Body() createOrderDto: CreateOrderDto) {
     const user = this.authService.decodeTokenFromHeader(
-      req.headers.authorization,
+      req.cookies.access_token,
     );
     createOrderDto.userId = user.id;
     const newOrder = this.orderService.create(createOrderDto);

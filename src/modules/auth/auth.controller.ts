@@ -3,10 +3,12 @@ import {
   Controller,
   Get,
   Post,
-  Request,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { plainToClass, plainToInstance } from 'class-transformer';
+import { Request, Response } from 'express';
 
 import { CanAccessPublic } from 'src/core/decorators/public.decorator';
 import { JwtGuard } from 'src/core/guards/jwt-auth.guard';
@@ -21,16 +23,20 @@ export class AuthController {
 
   @Post('signin')
   @CanAccessPublic()
-  async login(@Body() loginDto: LoginDto) {
-    const result = this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = this.authService.login(loginDto, response);
     return plainToInstance(AuthResponseDto, result);
   }
 
   @UseGuards(JwtGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    const authHeader = req.headers.authorization;
-    const user = this.authService.decodeTokenFromHeader(authHeader);
+  getProfile(@Req() req: Request) {
+    const authCookie = req.cookies.access_token;
+    console.log('auth cookie ', authCookie);
+    const user = this.authService.decodeTokenFromHeader(authCookie);
     return plainToClass(AuthUserResponseDto, user);
   }
 }

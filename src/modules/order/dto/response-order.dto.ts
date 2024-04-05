@@ -1,6 +1,8 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 
+import { CustomerResponseDto } from 'src/modules/customer/dto/response-customer.dto';
 import { ProductResponseDto } from 'src/modules/product/dto/response-product.dto';
+import { UserResponseDto } from 'src/modules/user/dto/response-user.dto';
 
 class OrderDetailsResponseDto {
   id: string;
@@ -42,8 +44,22 @@ export class OrderResponseDto {
   @Exclude()
   updatedAt: Date;
 
-  @Exclude()
   customerId: string;
+
+  @Expose()
+  @Type(() => CustomerResponseDto)
+  customer: CustomerResponseDto;
+
+  @Exclude()
+  userId: string;
+
+  @Type(() => UserResponseDto)
+  user: UserResponseDto;
+
+  @Expose()
+  get cashier(): string {
+    return this.user.name;
+  }
 
   @Type(() => OrderDetailsResponseDto)
   @Expose()

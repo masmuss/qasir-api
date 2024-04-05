@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 import { PrismaService } from 'nestjs-prisma';
 
 import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
@@ -62,7 +63,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, response: Response) {
     const user = await this.validateUser(loginDto.username, loginDto.password);
     const payload = {
       id: user.id,
@@ -72,6 +73,15 @@ export class AuthService {
         roleId: user.roleId,
       },
     };
+
+    const expiresIn = new Date(Date.now() + 1000 * 60 * 60 * 24);
+
+    response.cookie('access_token', this.jwtService.sign(payload), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      expires: expiresIn,
+    });
 
     return {
       ...user,
@@ -98,9 +108,8 @@ export class AuthService {
   }
 
   decodeTokenFromHeader(token: string) {
-    if (token && token.startsWith('Bearer ')) {
-      const tokenString = token.substring(7);
-      return this.jwtService.decode(tokenString);
+    if (token) {
+      return this.jwtService.decode(token);
     }
   }
 

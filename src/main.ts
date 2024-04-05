@@ -4,6 +4,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 
 import { AppModule } from './modules/app.module';
@@ -12,6 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const { httpAdapter } = app.get(HttpAdapterHost);
+  app.use(cookieParser());
   app.useGlobalFilters(
     new PrismaClientExceptionFilter(httpAdapter, {
       P2000: HttpStatus.BAD_REQUEST,
@@ -22,6 +24,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: '*',
+    credentials: true,
   });
 
   app.useGlobalInterceptors(

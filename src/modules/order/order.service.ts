@@ -106,7 +106,10 @@ export class OrderService {
     return this.prisma.order.update({
       where: { id: orderId },
       data: { total },
-      include: { orderDetails: { include: { product: true } } },
+      include: {
+        orderDetails: { include: { product: true } },
+        user: true,
+      },
     });
   }
 
@@ -148,6 +151,8 @@ export class OrderService {
               },
             },
           },
+          user: true,
+          customer: true,
         },
       });
     } catch (error) {
