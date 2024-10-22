@@ -13,10 +13,17 @@ export class UserMiddleware implements NestMiddleware {
   constructor(private readonly jwtService: JwtService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    const authCookie = req.cookies.access_token;
-    if (authCookie) {
-      const decoded =
-        this.jwtService.decode<Record<string, unknown>>(authCookie);
+    // const authCookie = req.cookies.access_token;
+    // if (authCookie) {
+    //   const decoded =
+    //     this.jwtService.decode<Record<string, unknown>>(authCookie);
+    //   req.user = decoded;
+    // }
+    //
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const decoded = this.jwtService.decode<Record<string, unknown>>(token);
       req.user = decoded;
     }
     next();

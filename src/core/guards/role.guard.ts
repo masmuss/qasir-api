@@ -26,7 +26,10 @@ export class RolesGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    return request.cookies.access_token;
+    // return request.cookies.access_token;
+
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 
   private async verifyToken(token: string) {
