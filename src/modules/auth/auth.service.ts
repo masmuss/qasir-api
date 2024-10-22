@@ -62,7 +62,8 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async login(loginDto: LoginDto, response: Response) {
     const user = await this.validateUser(loginDto.username, loginDto.password);
     const payload = {
       id: user.id,
